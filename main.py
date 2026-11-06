@@ -1,87 +1,97 @@
 
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
 import random
 
 CONSEILS = {
     "PASSES": [
-        "Observe tes coéquipiers avant de faire une passe.",
-        "Évite les passes risquées au milieu du terrain.",
-        "Utilise les passes courtes pour garder le ballon.",
-        "Cherche un joueur démarqué.",
-        "Change le côté du jeu si l'adversaire bloque ton attaque."
+        "Observe tes coequipiers avant de passer.",
+        "Cherche un joueur demarque.",
+        "Evite les passes risquees.",
+        "Change le cote du jeu si necessaire."
     ],
     "TIRS": [
+        "Regarde la position du gardien.",
         "Approche-toi de la surface avant de tirer.",
-        "Vise le côté opposé au gardien.",
-        "Ne tire pas si un défenseur bloque ton chemin.",
-        "Dans la surface, privilégie une frappe bien placée.",
-        "Regarde la position du gardien avant de tirer."
+        "Privilegie la precision.",
+        "Evite les defenseurs."
     ],
     "DEFENSE": [
-        "Ne fais pas sortir tous tes défenseurs.",
-        "Protège le chemin vers ton but.",
-        "Anticipe les passes de l'adversaire.",
-        "Évite de tacler trop tôt.",
-        "Garde tes défenseurs bien organisés."
+        "Protege le chemin vers ton but.",
+        "Evite de tacler trop tot.",
+        "Garde tes defenseurs organises."
     ],
     "DRIBBLES": [
         "Dribble seulement si tu as de l'espace.",
-        "Change de direction pour surprendre ton adversaire.",
-        "Évite les dribbles près de ta propre surface.",
-        "Utilise les gestes techniques avec modération.",
-        "Protège le ballon quand un défenseur approche."
+        "Change de direction pour surprendre.",
+        "Protege le ballon."
     ],
     "TACTIQUES": [
-        "Écarte le jeu pour créer des espaces.",
-        "Ne précipite pas tes attaques.",
+        "Ecarte le jeu.",
         "Fais circuler le ballon.",
-        "Observe les espaces derrière la défense.",
-        "Alterne entre attaques rapides et possession."
+        "Ne precipite pas tes attaques."
     ]
 }
 
-def donner_conseil(categorie=None):
-    if categorie not in CONSEILS:
-        categorie = random.choice(list(CONSEILS.keys()))
+class FCAssistant(App):
 
-    conseil = random.choice(CONSEILS[categorie])
+    def build(self):
+        self.title = "FC Assistant AI"
 
-    print("\nFC ASSISTANT AI")
-    print("Catégorie :", categorie)
-    print("Conseil :", conseil)
+        principal = BoxLayout(
+            orientation="vertical",
+            padding=15,
+            spacing=12
+        )
 
-def demarrer():
-    print("================================")
-    print("       FC ASSISTANT AI")
-    print("================================")
+        titre = Label(
+            text="[b]FC ASSISTANT AI[/b]",
+            markup=True,
+            font_size="26sp",
+            size_hint_y=None,
+            height=65
+        )
+        principal.add_widget(titre)
 
-    while True:
-        print("\n1. Passes")
-        print("2. Tirs")
-        print("3. Défense")
-        print("4. Dribbles")
-        print("5. Tactiques")
-        print("6. Conseil aléatoire")
-        print("0. Quitter")
+        self.resultat = Label(
+            text="Bienvenue ! Choisis une categorie.",
+            font_size="18sp"
+        )
+        principal.add_widget(self.resultat)
 
-        choix = input("\nChoisis une option : ")
+        for categorie in CONSEILS:
+            bouton = Button(
+                text=categorie,
+                font_size="18sp",
+                size_hint_y=None,
+                height=55
+            )
+            bouton.bind(
+                on_release=lambda instance, c=categorie:
+                self.conseil(c)
+            )
+            principal.add_widget(bouton)
 
-        categories = {
-            "1": "PASSES",
-            "2": "TIRS",
-            "3": "DEFENSE",
-            "4": "DRIBBLES",
-            "5": "TACTIQUES"
-        }
+        bouton = Button(
+            text="CONSEIL ALEATOIRE",
+            size_hint_y=None,
+            height=55
+        )
+        bouton.bind(
+            on_release=lambda instance: self.conseil("ALEATOIRE")
+        )
+        principal.add_widget(bouton)
 
-        if choix == "0":
-            print("À bientôt !")
-            break
-        elif choix == "6":
-            donner_conseil()
-        elif choix in categories:
-            donner_conseil(categories[choix])
-        else:
-            print("Choix incorrect. Réessaie.")
+        return principal
+
+    def conseil(self, categorie):
+        if categorie == "ALEATOIRE":
+            categorie = random.choice(list(CONSEILS.keys()))
+
+        message = random.choice(CONSEILS[categorie])
+        self.resultat.text = categorie + "\n\n" + message
 
 if __name__ == "__main__":
-    demarrer()
+    FCAssistant().run()
