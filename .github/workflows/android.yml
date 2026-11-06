@@ -1,0 +1,43 @@
+
+name: Build FC Assistant AI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Recuperer le projet
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer les dependances
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip openjdk-17-jdk \
+            python3-pip python3-venv \
+            autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev \
+            libffi-dev libssl-dev
+
+      - name: Installer Buildozer
+        run: |
+          pip install --user buildozer cython==0.29.36
+
+      - name: Construire APK
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          buildozer android debug
+
+      - name: Publier APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FC-Assistant-AI-APK
+          path: bin/*.apk
